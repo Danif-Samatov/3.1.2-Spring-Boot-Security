@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Пользователи</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div th:replace="fragments/header :: header"></div>
+<main class="page">
+    <h1>Пользователи</h1>
+    <p class="error" th:if="${error}" th:text="${error}"></p>
+
+    <h2>Добавить</h2>
+    <form class="add-form" th:action="@{/admin/add}" method="post">
+        <input type="text" name="firstName" placeholder="Имя" required>
+        <input type="text" name="lastName" placeholder="Фамилия" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="text" name="username" placeholder="Логин" required>
+        <input type="password" name="password" placeholder="Пароль" required autocomplete="new-password">
+        <span class="roles">
+            <label th:each="role : ${allRoles}">
+                <input type="checkbox" name="roleIds" th:value="${role.id}">
+                <span th:text="${role.shortName}"></span>
+            </label>
+        </span>
+        <button type="submit">Добавить</button>
+    </form>
+
+    <h2>Список</h2>
+    <p class="empty" th:if="${#lists.isEmpty(users)}">Пользователей пока нет.</p>
+    <table th:if="${!#lists.isEmpty(users)}">
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Email</th>
+            <th>Логин</th>
+            <th>Новый пароль</th>
+            <th>Роли</th>
+            <th>Действия</th>
+        </tr>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td>
+                <input type="text" name="firstName" th:value="${user.firstName}" required
+                       th:attr="form=${'edit-' + user.id}">
+            </td>
+            <td>
+                <input type="text" name="lastName" th:value="${user.lastName}" required
+                       th:attr="form=${'edit-' + user.id}">
+            </td>
+            <td>
+                <input type="email" name="email" th:value="${user.email}" required
+                       th:attr="form=${'edit-' + user.id}">
+            </td>
+            <td>
+                <input type="text" name="username" th:value="${user.username}" required
+                       th:attr="form=${'edit-' + user.id}">
+            </td>
+            <td>
+                <input type="password" name="password" placeholder="не менять" autocomplete="new-password"
+                       th:attr="form=${'edit-' + user.id}">
+            </td>
+            <td>
+                <div class="roles">
+                    <label th:each="role : ${allRoles}">
+                        <input type="checkbox" name="roleIds" th:value="${role.id}"
+                               th:attr="form=${'edit-' + user.id}"
+                               th:checked="${user.roles.contains(role)}">
+                        <span th:text="${role.shortName}"></span>
+                    </label>
+                </div>
+            </td>
+            <td>
+                <div class="actions">
+                    <form method="post" th:action="@{/admin/update}" th:id="'edit-' + ${user.id}">
+                        <input type="hidden" name="id" th:value="${user.id}">
+                        <button type="submit">Изменить</button>
+                    </form>
+                    <form method="post" th:action="@{/admin/delete}"
+                          onsubmit="return confirm('Удалить пользователя?');">
+                        <input type="hidden" name="id" th:value="${user.id}">
+                        <button type="submit">Удалить</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    </table>
+</main>
+</body>
+</html>
