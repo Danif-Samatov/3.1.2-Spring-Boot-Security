@@ -9,7 +9,6 @@
 <div th:replace="fragments/header :: header"></div>
 <main class="page">
     <h1>Пользователи</h1>
-    <p class="error" th:if="${error}" th:text="${error}"></p>
 
     <h2>Добавить</h2>
     <form class="add-form" th:action="@{/admin/add}" method="post">
